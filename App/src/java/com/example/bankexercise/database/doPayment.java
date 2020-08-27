@@ -1,51 +1,48 @@
 package com.example.bankexercise.database;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.bankexercise.ConnectionData;
-import com.example.bankexercise.Menu;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
-public class authLogin extends AsyncTask<String,String,String> {
+public class doPayment extends AsyncTask<String,String,String> {
 
+    @SuppressLint("StaticFieldLeak")
     Context context;
 
-
-    public authLogin(Context context){
+    public doPayment(Context context){
         this.context = context;
     }
 
     @Override
     protected String doInBackground(String... strings) {
 
-        String Username = strings[0];
-        String Password = strings[1];
-
+        String IDUser = strings[0];
+        String IDReciever = strings[1];
+        String Value = strings[2];
 
 
         try {
 
-            String data = URLEncoder.encode("Username", "UTF-8")
-                    + "=" + URLEncoder.encode(Username, "UTF-8");
-            data += "&" + URLEncoder.encode("Password", "UTF-8")
-                    + "=" + URLEncoder.encode(Password, "UTF-8");
+            String data = URLEncoder.encode("IDUser", "UTF-8")
+                    + "=" + URLEncoder.encode(IDUser, "UTF-8");
+            data += "&" + URLEncoder.encode("IDReciever", "UTF-8")
+                    + "=" + URLEncoder.encode(IDReciever, "UTF-8");
+            data += "&" + URLEncoder.encode("Value", "UTF-8")
+                    + "=" + URLEncoder.encode(Value, "UTF-8");
             data += "&" + URLEncoder.encode("Route", "UTF-8")
-                    + "=" + URLEncoder.encode("authLogin", "UTF-8");
+                    + "=" + URLEncoder.encode("doPayment", "UTF-8");
 
 
             String text = "";
@@ -79,38 +76,21 @@ public class authLogin extends AsyncTask<String,String,String> {
             } finally {
                 try {
                     if(reader != null)
-                    reader.close();
+                        reader.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
             return text;
         } catch (IOException e) {
-                e.printStackTrace();
-            }
+            e.printStackTrace();
+        }
 
         return null;
     }
 
     @Override
     protected void onPostExecute(String resp) {
-
-
-
-        String[] splitString = resp.split("\n");
-
-        if(splitString.length > 1){
-            Intent getMenu;
-
-            getMenu = new Intent(context, Menu.class);
-            Bundle params = new Bundle();
-
-            Toast.makeText(context,splitString[1],Toast.LENGTH_LONG).show();
-
-            params.putString("IDUser",splitString[1]);
-
-            ((AppCompatActivity) context).startActivityForResult(getMenu, 1);
-
-        }
+        Toast.makeText(context,resp,Toast.LENGTH_LONG).show();
     }
 }
